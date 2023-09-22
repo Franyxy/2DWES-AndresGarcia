@@ -3,17 +3,14 @@
 <BODY>
 <?php
 $num=$num1="127";
-$bin="";
+$sol="";
 while($num!=0){
-    if($num%2==0){
-        $bin.="0";
-    }else{
-        $bin.="1";
-    }
+    $aux=$num%2;
+    $sol.=$aux;
     $num=bcdiv($num/2, '1', 0);
 }
-$bin=strrev($bin);
-echo "El número ".$num1." en binario es: ".$bin;
+$sol=strrev($sol);
+echo "El número ".$num1." en binario es: ".$sol;
 ?>
 </BODY>
 </HTML>
