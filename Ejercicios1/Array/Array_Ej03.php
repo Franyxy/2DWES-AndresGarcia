@@ -8,15 +8,20 @@
 		<th>Octal</th>
     </tr>
 	<?php
-		$cont=0;
-		while($cont<=20){
-			echo "<tr>";
+        $arrayBin=[];
+        for($i=0;$i<=20;$i++){
+            $arrayBin[$i]=decbin($i);  
+        }
+        $cont=0;
+        foreach($arrayBin as $x){
+            echo "<tr>";
             echo "<td>".$cont."</td>";
-			echo "<td>".decbin($cont)."</td>";
-			echo "<td>".decoct($cont)."</td>";
+			echo "<td>".$x."</td>";
+			echo "<td>".(decoct($cont))."</td>";
 			echo "</tr>";
-			$cont++;
-		}
+            $cont++;
+        }
+		
 	?>
 </table>
 </body>
