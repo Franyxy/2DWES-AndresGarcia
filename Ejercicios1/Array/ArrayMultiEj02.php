@@ -13,8 +13,8 @@
                 }
             }
             for($k=0;$k<$filas;$k++){
-                $sumfilas[$k]=sumarFilas($filas,$col,$matriz,$k);
-                $sumcol[$k]=sumarCol($filas,$col,$matriz,$k);
+                $sumfilas[$k]=sumarFilas($col,$matriz,$k);
+                $sumcol[$k]=sumarCol($filas,$matriz,$k);
             }
             echo "<tr>";
             echo "<td></td>";
@@ -28,25 +28,18 @@
                 echo "</tr>";
             }
 
-            function sumarFilas($filas,$col,$matriz,$num){
+            function sumarFilas($col,$matriz,$num){
                 $sum=0;
-                for($i=0;$i<$filas;$i++){
-                    for($j=0;$j<$col;$j++){
-                        if($num==$j){
-                            $sum=$sum+$matriz[$i][$j];
-                        }
-                    }
+                for($j=0;$j<$col;$j++){
+                    $sum=$sum+$matriz[$j][$num]; 
                 }
+                
                 return $sum;
             }
-            function sumarCol($filas,$col,$matriz,$num){
+            function sumarCol($filas,$matriz,$num){
                 $sum=0;
                 for($i=0;$i<$filas;$i++){
-                    for($j=0;$j<$col;$j++){
-                        if($num==$i){
-                            $sum=$sum+$matriz[$i][$j];
-                        }
-                    }
+                    $sum=$sum+$matriz[$num][$i];
                 }
                 return $sum;
             }
