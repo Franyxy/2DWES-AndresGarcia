@@ -5,7 +5,8 @@
     <table border="1" style="width:300px;border-collapse: collapse;text-align:center;">
         <?php
             $matriz=$matriztraspuesta=[];
-            $filas=$col=3;
+            $filas=5;
+            $col=6;
             for($i=0;$i<$filas;$i++){
                 echo "<tr>";
                 for($j=0;$j<$col;$j++){
@@ -20,18 +21,24 @@
         <p>Matriz Traspuesta</p>
     <table border="1" style="width:300px;border-collapse: collapse;text-align:center;">
         <?php
-            for($i=0;$i<$filas;$i++){
-                for($j=0;$j<$col;$j++){
-                    $matriztraspuesta[$j][$i]=$matriz[$i][$j];
-                }
+          $aux=$filas;
+          $filas=$col;
+          $col=$aux;
+          for($i=0;$i<$filas;$i++){
+            for($j=0;$j<$col;$j++){
+                $matriztraspuesta[$i][$j]=0;
             }
-            for($i=0;$i<$filas;$i++){
-                echo "<tr>";
-                for($j=0;$j<$col;$j++){
-                    echo "<td style='width:100px;'>".$matriztraspuesta[$i][$j]."</td>";
-                }
-                echo "</tr>";
+  
+          }
+          for($i=0;$i<$filas;$i++){
+            echo "<tr>";
+            for($j=0;$j<$col;$j++){
+                $matriztraspuesta[$i][$j]=$matriz[$j][$i];
+                echo "<td style='width:100px;'>".$matriztraspuesta[$i][$j]."</td>";
             }
+            echo "</tr>";
+          }
+
         ?>
     </table>
 </body>
