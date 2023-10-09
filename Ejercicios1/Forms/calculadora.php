@@ -3,10 +3,17 @@
 <body>
     <h1>Calculadora</h1>
         <?php
-            $resultado=0;$simbolo="";
-            $op1=$_POST['op1'];
-            $op2=$_POST['op2'];
-            $opcion=$_POST['operando'];
+            $resultado=0;
+            $op1=test_input($_POST['op1']);
+            $op2=test_input($_POST['op2']);
+            $opcion=test_input($_POST['operando']);
+
+            function test_input($data) {
+                $data = trim($data);
+                $data = stripslashes($data);
+                $data = htmlspecialchars($data);
+                return $data;
+            }
 
             if($opcion=='sum'){
                 $resultado=$op1+$op2;
