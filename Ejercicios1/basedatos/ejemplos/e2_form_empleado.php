@@ -19,8 +19,25 @@
         <label for="fecha_nac">Fecha Nacimiento</label>    
         <input type="date" name="fecha_nac" id="fecha_nac"><br><br>
 
-        <label for="cod_dpto">Código Departamento</label>    
-        <input type="text" name="cod_dpto" id="cod_dpto">
+        <?php
+            $servername = "localhost";
+            $username = "root";
+            $password = "rootroot";
+            $dbname = "empleadosnn";
+
+            $conn1 = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
+            $conn1->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            $stmt1 = $conn1->prepare("SELECT cod_dpto from departamento;");
+            $stmt1->execute();
+            $arrayCod_pdto=$stmt1->FetchAll(PDO::FETCH_COLUMN);
+            echo '<label for="cod_dpto">Elige un departamento</label>';
+            echo '<select name="cod_dpto" id="cod_dpto">';
+            foreach($arrayCod_pdto as $x){
+                echo '<option value='.$x.'>'.$x.'</option>';
+            }
+            echo '</select><br><br>';
+        ?>
+
 
         <label for="fecha_ini">Fecha Inicio Departamento</label>    
         <input type="date" name="fecha_ini" id="fecha_ini"><br><br>
@@ -30,16 +47,18 @@
     </form>
     <?php
         if($_SERVER["REQUEST_METHOD"]=="POST"){
+            $servername = "localhost";
+            $username = "root";
+            $password = "rootroot";
+            $dbname = "empleadosnn";
+
             $dni=test_input($_POST['dni']);
             $nombre=test_input($_POST['nombre']);
             $salario=test_input($_POST['salario']);
             $fecha_nac=date('Y-m-d', strtotime($_POST['fecha_nac']));
             $cod_dpto=test_input($_POST['cod_dpto']);
             $fecha_ini=date('Y-m-d', strtotime($_POST['fecha_ini']));
-            $servername = "localhost";
-            $username = "root";
-            $password = "rootroot";
-            $dbname = "empleadosnn";
+            
 
             try {
                 $conn = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
