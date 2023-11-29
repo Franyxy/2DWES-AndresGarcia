@@ -18,13 +18,21 @@
             $dbname = "empleadosnn";
             $conn1 = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
             $conn1->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            $stmt1 = $conn1->prepare("SELECT nombre_dpto from departamento;");
+            $stmt1 = $conn1->prepare("SELECT nombre_dpto,cod_dpto from departamento;");
             $stmt1->execute();
-            $arrayNomdto=$stmt1->FetchAll(PDO::FETCH_COLUMN);
+            $arrayNomdto=$stmt1->FetchAll(PDO::FETCH_ASSOC);
+            var_dump($arrayNomdto);
             echo '<label for="nom_dto">Elige un departamento</label>';
             echo '<select name="nom_dto" id="nom_dto">';
-            foreach($arrayNomdto as $x){
-                echo '<option value='.$x.'>'.$x.'</option>';
+            foreach($arrayNomdto as $departamento){
+                foreach($departamento as $nombre => $cod){
+                    if($nombre=='nombre_dpto'){
+                        $aux=$cod;
+                    }
+                    if($nombre=='cod_dpto'){
+                        echo '<option value='.$cod.'>'.$aux.'</option>';
+                    }
+                }
             }
             echo '</select><br><br>';
         ?>
@@ -46,7 +54,8 @@
                 $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
                 // prepare sql and bind parameters
-                $stmt = $conn->prepare("SELECT  empleado.dni,nombre_emple,salario,fecha_nac from empleado inner join emple_dpto on empleado.dni=emple_dpto.dni INNER JOIN departamento ON departamento.cod_dpto = emple_dpto.cod_dpto WHERE nombre_dpto='$valueOption'");
+                $stmt = $conn->prepare("SELECT  empleado.dni,nombre_emple,salario,fecha_nac from empleado inner join emple_dpto on empleado.dni=emple_dpto.dni INNER JOIN departamento ON departamento.cod_dpto = emple_dpto.cod_dpto WHERE departamento.cod_dpto=:cod_dpto");
+                $stmt->bindParam(':cod_dpto', $valueOption);
                 $stmt->execute();
                 $arrayDatosEmpleado=$stmt->FetchAll(PDO::FETCH_ASSOC);
                 echo "<br><table border='1px' style='border-collapse: collapse; text-align:center;'>";
