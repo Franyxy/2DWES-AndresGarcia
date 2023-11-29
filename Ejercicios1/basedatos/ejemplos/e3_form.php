@@ -21,18 +21,12 @@
             $stmt1 = $conn1->prepare("SELECT nombre_dpto,cod_dpto from departamento;");
             $stmt1->execute();
             $arrayNomdto=$stmt1->FetchAll(PDO::FETCH_ASSOC);
-            var_dump($arrayNomdto);
             echo '<label for="nom_dto">Elige un departamento</label>';
             echo '<select name="nom_dto" id="nom_dto">';
-            foreach($arrayNomdto as $departamento){
-                foreach($departamento as $nombre => $cod){
-                    if($nombre=='nombre_dpto'){
-                        $aux=$cod;
-                    }
-                    if($nombre=='cod_dpto'){
-                        echo '<option value='.$cod.'>'.$aux.'</option>';
-                    }
-                }
+            foreach ($arrayNomdto as $departamento) {
+                $nombre = $departamento['nombre_dpto'];
+                $cod = $departamento['cod_dpto'];
+                echo '<option value='.$cod.'>'.$nombre.'</option>';
             }
             echo '</select><br><br>';
         ?>
