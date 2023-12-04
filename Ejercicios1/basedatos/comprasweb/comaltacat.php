@@ -32,15 +32,19 @@
                 $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
                 // Sentencia sql para saber cuantas categorias hay, nos lo muestra en una array
-                $stmt = $conn->prepare("SELECT NOMBRE from categoria;");
+                $stmt = $conn->prepare("SELECT MAX(ID_CATEGORIA) from categoria;");
                 $stmt->execute();
-                $NumCategoria=$stmt->FetchAll(PDO::FETCH_COLUMN);
+                $CodMax=$stmt->fetchColumn();
+
                 //Condición if la cuál nos ayudará a obtener un código que se autoincremente
-                if(sizeof($NumCategoria)==0){
+                if($CodMax==null){
                     $cod="C-001";
+
                 }else{
-                    $aux=str_pad(sizeof($NumCategoria)+1, 3, "0", STR_PAD_LEFT);
-                    $cod="C-".$aux;
+                    $codStr=substr($CodMax,-3);
+                    $codInt=$codStr+1;
+                    $cod="C-".str_pad($codInt,3,'0',STR_PAD_LEFT);
+
                 }
 
                 $nom_cat=test_input($_POST['nom_cat']);

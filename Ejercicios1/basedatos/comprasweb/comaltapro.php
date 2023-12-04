@@ -44,15 +44,18 @@
             try {
 
                 // Sentencia sql para saber cuantas categorias hay, nos lo muestra en una array
-                $stmt2 = $conn->prepare("SELECT NOMBRE from producto;");
+                $stmt2 = $conn->prepare("SELECT MAX(ID_PRODUCTO) from producto;");
                 $stmt2->execute();
-                $NumProd=$stmt2->FetchAll(PDO::FETCH_COLUMN);
+                $CodMax=$stmt2->fetchColumn();
                 //Condición if la cuál nos ayudará a obtener un código que se autoincremente
-                if(sizeof($NumProd)==0){
+                if($CodMax==null){
                     $cod="P0001";
+
                 }else{
-                    $aux=str_pad(sizeof($NumProd)+1, 4, "0", STR_PAD_LEFT);
-                    $cod="P".$aux;
+                    $codStr=substr($CodMax,-4);
+                    $codInt=$codStr+1;
+                    $cod="P".str_pad($codInt,4,'0',STR_PAD_LEFT);
+
                 }
 
                 $nom_pro=test_input($_POST['nom_pro']);
@@ -66,7 +69,7 @@
                 $stmt2->bindParam(':id_cat', $id_cat);
                 $stmt2->execute();
 
-                
+
                 echo "Se han introducido los datos correctamente";
                 }
             catch(PDOException $e)
