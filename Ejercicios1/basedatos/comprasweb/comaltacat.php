@@ -4,18 +4,35 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Alta Categoría</title>
+    <link rel="stylesheet" type="text/css" href="index.css">
+
 </head>
 <body>
     <!--
         Alta Categoría 
     -->
-    <h1>Alta Categoría</h1>
+    <nav>
+        <ul>
+            <li><a href="comaltacat.php">Alta Categoría</a></li>
+            <li><a href="comaltapro.php">Alta de Productos</a></li>
+            <li><a href="comaltaalm.php">Alta de Almacenes</a></li>
+            <li><a href="comaprpro.php">Aprovisionar Productos</a></li>
+            <li><a href="comconstock.php">Consulta de Stock</a></li>
+            <li><a href="comconsalm.php">Consulta de Almacenes</a></li>
+            <li><a href="comconscom.php">Consulta de Compras</a></li>
+            <li><a href="comaltacli.php">Alta de Clientes</a></li>
+            <li><a href="compro.php">Compra de Productos</a></li>
+        </ul>
+    </nav>
+    <fieldset>
+    <legend>Alta Categoría</legend>
     <form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>">
         <label for="nom_cat"> Nombre Categoria</label>    
-        <input type="text" name="nom_cat" id="nom_cat"><br><br>
+        <input type="text" name="nom_cat" id="nom_cat" required><br><br>
         <input type="submit">
         <input type="reset">
     </form>
+    </fieldset>
     <?php
         if($_SERVER["REQUEST_METHOD"]=="POST"){
             $servername = "localhost";

@@ -3,13 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aprovisionar Productos</title>
+    <title>Compra Producto </title>
     <link rel="stylesheet" type="text/css" href="index.css">
-
+    <script>
+        function onBlurFunction() {
+            // Your JavaScript code here
+            console.log('Element lost focus');
+        }
+    </script>
 </head>
 <body>
     <!--
-        Aprovisionar Productos
+        Compra Producto 
     -->
     <nav>
         <ul>
@@ -25,9 +30,10 @@
         </ul>
     </nav>
     <fieldset>
-    <legend>Aprovisionar Productos</legend>
-    <form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>">
+        <legend>Compra Producto</legend>
+        <form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>">
         <?php
+        include('funciones.php');
             $servername = "localhost";
             $username = "root";
             $password = "adm1n";
@@ -46,7 +52,6 @@
                 echo '<option value='.$cod.'>'.$nombre.'</option>';
             }
             echo '</select><br><br>';
-
             $stmt2 = $conn->prepare("SELECT NUM_ALMACEN,LOCALIDAD from almacen;");
             $stmt2->execute();
             $arrayAlm=$stmt2->FetchAll(PDO::FETCH_ASSOC);
@@ -59,9 +64,11 @@
                 echo '<option value='.$cod.'>'.$nombre.'</option>';
             }
             echo '</select><br><br>';
+            
         ?>
-        <label for="cantidad">Cantidad</label>    
-        <input type="text" name="cantidad" id="cantidad" required><br><br> 
+        <label for="nif">NIF</label>    
+        <input type="text" name="nif" id="nif" required><br><br>    
+
         <input type="submit">
         <input type="reset">
     </form>
@@ -70,23 +77,50 @@
         if($_SERVER["REQUEST_METHOD"]=="POST"){
 
             try {
+                $id_alm=test_input($_POST['alm']);
+                $id_prod=test_input($_POST['prod']);
+                $nif=test_input($_POST['nif']);
 
-                $cantidad=test_input($_POST['cantidad']);
-                $prod=test_input($_POST['prod']);
-                $alm=test_input($_POST['alm']);
+                $stmtnif = $conn->prepare("SELECT NOMBRE from cliente where NIF=:nif;");
+                $stmtnif->bindParam(':nif', $nif);
+                $stmtnif->execute();
+                $NIFCheck=$stmtnif->fetchColumn();
 
-
-                $stmt3 = $conn->prepare("INSERT INTO almacena (NUM_ALMACEN,ID_PRODUCTO,CANTIDAD) VALUES (:alm,:prod,:cantidad)");
-                $stmt3->bindParam(':alm', $alm);
-                $stmt3->bindParam(':prod', $prod);
-                $stmt3->bindParam(':cantidad', $cantidad);
-                $stmt3->execute();
-
+                if(empty($NIFCheck)){
+                    throw new Exception ('El NIF introducido no figura como cliente');
+                }else{
+                    $stmt3 = $conn->prepare("SELECT CANTIDAD from almacena Where ID_PRODUCTO=:id_prod AND NUM_ALMACEN=:id_alm;");
+                    $stmt3->bindParam(':id_alm', $id_alm);
+                    $stmt3->bindParam(':id_prod', $id_prod);
+                    $stmt3->execute();
+                    $Prod=$stmt3->fetchColumn();
+                    if($Prod<1){
+                        throw new Exception ('No hay stock suficiente del producto seleccionado en el almacen deseado');
+                    }else{
+                        $stmt4 = $conn->prepare("INSERT INTO compra(FECHA_COMPRA, ID_PRODUCTO, NIF, UNIDADES) VALUES (NOW(), :id_prod, :nif, 1);");
+                        $stmt4->bindParam(':id_prod', $id_prod);
+                        $stmt4->bindParam(':nif', $nif);
+                        $stmt4->execute();
+                        if($Prod==1){
+                            $stmt5 = $conn->prepare("DELETE from almacena Where ID_PRODUCTO=:id_prod AND NUM_ALMACEN=:id_alm;");
+                            $stmt5->bindParam(':id_prod', $id_prod);
+                            $stmt5->bindParam(':nif', $nif);
+                            $stmt5->execute();
+                        }else{
+                            $stmt6 = $conn->prepare("UPDATE almacena SET CANTIDAD = CANTIDAD - 1 WHERE ID_PRODUCTO = :id_prod AND NUM_ALMACEN = :id_alm;");
+                            $stmt6->bindParam(':id_prod', $id_prod);
+                            $stmt6->bindParam(':id_alm', $id_alm);
+                            $stmt6->execute();
+                        }
+                    }
+                }
                 echo "Se han introducido los datos correctamente";
                 }
             catch(PDOException $e)
                 {
                 echo "Error: " . $e->getMessage();
+                }catch(Exception $e){
+                    echo "Error: " . $e->getMessage();
                 }
             $conn = null;
         }

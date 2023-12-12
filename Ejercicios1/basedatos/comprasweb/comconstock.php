@@ -4,12 +4,27 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Consulta de Stock</title>
+    <link rel="stylesheet" type="text/css" href="index.css">
 </head>
 <body>
     <!--
         Consulta de Stock
     -->
-    <h1>Consulta de Stock</h1>
+    <nav>
+        <ul>
+            <li><a href="comaltacat.php">Alta Categoría</a></li>
+            <li><a href="comaltapro.php">Alta de Productos</a></li>
+            <li><a href="comaltaalm.php">Alta de Almacenes</a></li>
+            <li><a href="comaprpro.php">Aprovisionar Productos</a></li>
+            <li><a href="comconstock.php">Consulta de Stock</a></li>
+            <li><a href="comconsalm.php">Consulta de Almacenes</a></li>
+            <li><a href="comconscom.php">Consulta de Compras</a></li>
+            <li><a href="comaltacli.php">Alta de Clientes</a></li>
+            <li><a href="compro.php">Compra de Productos</a></li>
+        </ul>
+    </nav>
+    <fieldset>
+    <legend>Consulta de Stock</legend>
     <form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>">
         <?php
             $servername = "localhost";
@@ -35,6 +50,7 @@
         <input type="submit">
         <input type="reset">
     </form>
+    </fieldset>
     <?php
         if($_SERVER["REQUEST_METHOD"]=="POST"){
 
@@ -52,7 +68,7 @@
                 $stmt2->execute();
                 $arrayStockProd=$stmt2->FetchAll(PDO::FETCH_ASSOC);
 
-                echo "<br><table border='1px' style='border-collapse: collapse; text-align:center;'>";
+                echo "<br><table>";
                 echo "<tr><th>Cantidad</th><th>Localidad</th></tr>";
 
                 foreach ($arrayStockProd as $producto) {
