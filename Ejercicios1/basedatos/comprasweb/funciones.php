@@ -1,6 +1,5 @@
 <?php
-function validarNIF($nif)
-    {
+    function validarNIF($nif){
         $pattern = "/^[XYZ]?\d{5,8}[A-Z]$/";
         $dni = strtoupper($nif);
         if(preg_match($pattern, $dni))
@@ -24,5 +23,12 @@ function validarNIF($nif)
             throw new Exception ('DNI/NIE INCORRECTO // FORMATO INCORRECTO');
             return false;
         }
+    }
+    
+    function test_input($data) {
+        $data = trim($data);
+        $data = stripslashes($data);
+        $data = htmlspecialchars($data);
+        return $data;
     }
 ?>

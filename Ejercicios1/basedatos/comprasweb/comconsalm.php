@@ -28,9 +28,10 @@
     <legend>Consulta de Almacenes</legend>
     <form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>">
         <?php
+        include('funciones.php');
             $servername = "localhost";
             $username = "root";
-            $password = "adm1n";
+            $password = "rootroot";
             $dbname = "comprasweb";
             $conn = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
             $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
@@ -90,13 +91,6 @@
                 echo "Error: " . $e->getMessage();
                 }
             $conn = null;
-        }
-
-        function test_input($data) {
-            $data = trim($data);
-            $data = stripslashes($data);
-            $data = htmlspecialchars($data);
-            return $data;
         }
     ?>
 </body>

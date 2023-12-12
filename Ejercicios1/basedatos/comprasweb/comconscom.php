@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Compra Producto </title>
+    <title>Consulta de Compra</title>
     <link rel="stylesheet" type="text/css" href="index.css">
     <script>
         function onBlurFunction() {
@@ -14,7 +14,7 @@
 </head>
 <body>
     <!--
-        Compra Producto 
+        Consulta de Compra
     -->
     <nav>
         <ul>
@@ -30,7 +30,7 @@
         </ul>
     </nav>
     <fieldset>
-        <legend>Compra Producto</legend>
+        <legend>Consulta de Compra</legend>
         <form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>">
         <?php
         include('funciones.php');
@@ -40,35 +40,23 @@
             $dbname = "comprasweb";
             $conn = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
             $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            $stmt1 = $conn->prepare("SELECT ID_PRODUCTO,NOMBRE from producto;");
+            $stmt1 = $conn->prepare("SELECT NIF,NOMBRE from cliente;");
             $stmt1->execute();
-            $arrayProd=$stmt1->FetchAll(PDO::FETCH_ASSOC);
+            $arrayCliente=$stmt1->FetchAll(PDO::FETCH_ASSOC);
             
-            echo '<label for="prod">Elige un producto </label>';
-            echo '<select name="prod" id="prod">';
-            foreach ($arrayProd as $producto) {
-                $nombre = $producto['NOMBRE'];
-                $cod = $producto['ID_PRODUCTO'];
-                echo '<option value='.$cod.'>'.$nombre.'</option>';
+            echo '<label for="client">Elige un cliente </label>';
+            echo '<select name="client" id="client">';
+            foreach ($arrayCliente as $cliente) {
+                $nif = $cliente['NIF'];
+                $nombre = $cliente['NOMBRE'];
+                echo '<option value='.$nif.'>'.$nombre.'</option>';
             }
-            echo '</select><br><br>';
-            $stmt2 = $conn->prepare("SELECT NUM_ALMACEN,LOCALIDAD from almacen;");
-            $stmt2->execute();
-            $arrayAlm=$stmt2->FetchAll(PDO::FETCH_ASSOC);
-            
-            echo '<label for="alm">Elige un almacén </label>';
-            echo '<select name="alm" id="alm">';
-            foreach ($arrayAlm as $almacen) {
-                $nombre = $almacen['LOCALIDAD'];
-                $cod = $almacen['NUM_ALMACEN'];
-                echo '<option value='.$cod.'>'.$nombre.'</option>';
-            }
-            echo '</select><br><br>';
-            
+            echo '</select><br><br>';     
         ?>
-        <label for="nif">NIF</label>    
-        <input type="text" name="nif" id="nif" required><br><br>    
-
+        <label for="fecha_1">Fecha Inicio</label>    
+        <input type="date" name="fecha_1" id="fecha_1"><br><br>
+        <label for="fecha_2">Fecha Fin</label>    
+        <input type="date" name="fecha_2" id="fecha_2"><br><br>
         <input type="submit">
         <input type="reset">
     </form>
@@ -77,17 +65,14 @@
         if($_SERVER["REQUEST_METHOD"]=="POST"){
 
             try {
-                $id_alm=test_input($_POST['alm']);
-                $id_prod=test_input($_POST['prod']);
-                $nif=test_input($_POST['nif']);
+                $id_cliente=test_input($_POST['client']);
+                $fecha1=date('Y-m-d', strtotime($_POST['fecha_1']));
+                $fecha2=date('Y-m-d', strtotime($_POST['fecha_2']));
 
-                $stmtnif = $conn->prepare("SELECT NOMBRE from cliente where NIF=:nif;");
-                $stmtnif->bindParam(':nif', $nif);
-                $stmtnif->execute();
-                $NIFCheck=$stmtnif->fetchColumn();
 
-                if(empty($NIFCheck)){
-                    throw new Exception ('El NIF introducido no figura como cliente');
+                
+                if($fecha1>$fecha2){
+                    throw new Exception ('Las fechas introducidas no son válidas');
                 }else{
                     $stmt3 = $conn->prepare("SELECT CANTIDAD from almacena Where ID_PRODUCTO=:id_prod AND NUM_ALMACEN=:id_alm;");
                     $stmt3->bindParam(':id_alm', $id_alm);
@@ -97,18 +82,14 @@
                     if($Prod<1){
                         throw new Exception ('No hay stock suficiente del producto seleccionado en el almacen deseado');
                     }else{
-                        $stmt4 = $conn->prepare("INSERT INTO compra(FECHA_COMPRA, ID_PRODUCTO, NIF, UNIDADES) VALUES (:fecha, :id_prod, :nif, '1');");
+                        $stmt4 = $conn->prepare("INSERT INTO compra(FECHA_COMPRA, ID_PRODUCTO, NIF, UNIDADES) VALUES (NOW(), :id_prod, :nif, 1);");
                         $stmt4->bindParam(':id_prod', $id_prod);
                         $stmt4->bindParam(':nif', $nif);
-                        $fecha=NEW DateTime();
-                        $fecha_formateada = $fecha->format('Y-m-d H:i:s');
-                        echo $fecha_formateada;
-                        $stmt4->bindParam(':fecha', $fecha_formateada);
                         $stmt4->execute();
                         if($Prod==1){
                             $stmt5 = $conn->prepare("DELETE from almacena Where ID_PRODUCTO=:id_prod AND NUM_ALMACEN=:id_alm;");
                             $stmt5->bindParam(':id_prod', $id_prod);
-                            $stmt5->bindParam(':id_alm', $id_alm);
+                            $stmt5->bindParam(':nif', $nif);
                             $stmt5->execute();
                         }else{
                             $stmt6 = $conn->prepare("UPDATE almacena SET CANTIDAD = CANTIDAD - 1 WHERE ID_PRODUCTO = :id_prod AND NUM_ALMACEN = :id_alm;");
@@ -128,7 +109,6 @@
                 }
             $conn = null;
         }
-
     ?>
 </body>
 </body>

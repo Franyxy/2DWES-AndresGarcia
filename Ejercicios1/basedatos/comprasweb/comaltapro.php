@@ -34,7 +34,7 @@
         <?php
             $servername = "localhost";
             $username = "root";
-            $password = "adm1n";
+            $password = "rootroot";
             $dbname = "comprasweb";
             $conn = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
             $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
@@ -54,10 +54,10 @@
         <input type="submit">
         <input type="reset">
     </form>
-    </fieldset
+    </fieldset>
     <?php
         if($_SERVER["REQUEST_METHOD"]=="POST"){
-
+            include('funciones.php');
             try {
 
                 // Sentencia sql para saber cuantas categorias hay, nos lo muestra en una array
@@ -96,13 +96,6 @@
             $conn = null;
         }
 
-        function test_input($data) {
-            $data = trim($data);
-            $data = stripslashes($data);
-            $data = htmlspecialchars($data);
-            return $data;
-        }
     ?>
-</body>
 </body>
 </html>

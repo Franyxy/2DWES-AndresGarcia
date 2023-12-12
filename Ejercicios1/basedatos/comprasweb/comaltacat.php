@@ -34,10 +34,11 @@
     </form>
     </fieldset>
     <?php
+    include('funciones.php');
         if($_SERVER["REQUEST_METHOD"]=="POST"){
             $servername = "localhost";
             $username = "root";
-            $password = "adm1n";
+            $password = "rootroot";
             $dbname = "comprasweb";
             
             
@@ -79,13 +80,6 @@
                 echo "Error: " . $e->getMessage();
                 }
             $conn = null;
-        }
-
-        function test_input($data) {
-            $data = trim($data);
-            $data = stripslashes($data);
-            $data = htmlspecialchars($data);
-            return $data;
         }
     ?>
 </body>
