@@ -71,24 +71,42 @@
         if($_SERVER["REQUEST_METHOD"]=="POST"){
 
             try {
-
-                $cantidad=test_input($_POST['cantidad']);
-                $prod=test_input($_POST['prod']);
-                $alm=test_input($_POST['alm']);
-
-
-                $stmt3 = $conn->prepare("INSERT INTO almacena (NUM_ALMACEN,ID_PRODUCTO,CANTIDAD) VALUES (:alm,:prod,:cantidad)");
-                $stmt3->bindParam(':alm', $alm);
-                $stmt3->bindParam(':prod', $prod);
-                $stmt3->bindParam(':cantidad', $cantidad);
-                $stmt3->execute();
+                $cantidad = test_input($_POST['cantidad']);
+                if (!ctype_digit($cantidad)) {
+                    throw new Exception('Número de unidades introducido NO válido.');
+                }
+                
+                $prod = test_input($_POST['prod']);
+                $alm = test_input($_POST['alm']);
+                
+                $stmtbool = $conn->prepare("SELECT * FROM almacena WHERE NUM_ALMACEN=:alm AND ID_PRODUCTO=:prod");
+                $stmtbool->bindParam(':alm', $alm);
+                $stmtbool->bindParam(':prod', $prod);
+                $stmtbool->execute();
+                $ArrBool = $stmtbool->fetchAll(PDO::FETCH_ASSOC);
+                
+                if (empty($ArrBool)) {
+                    $stmt3 = $conn->prepare("INSERT INTO almacena (NUM_ALMACEN, ID_PRODUCTO, CANTIDAD) VALUES (:alm, :prod, :cantidad)");
+                    $stmt3->bindParam(':alm', $alm);
+                    $stmt3->bindParam(':prod', $prod);
+                    $stmt3->bindParam(':cantidad', $cantidad);
+                    $stmt3->execute();
+                } else {
+                    $añadir = $ArrBool[0]['CANTIDAD'];
+                    $stmt4 = $conn->prepare("UPDATE almacena SET CANTIDAD = :total WHERE ID_PRODUCTO = :prod AND NUM_ALMACEN = :alm");
+                    $stmt4->bindParam(':alm', $alm);
+                    $stmt4->bindParam(':prod', $prod);
+                    $total = $añadir + $cantidad;
+                    $stmt4->bindParam(':total', $total);
+                    $stmt4->execute();
+                }
 
                 echo "Se han introducido los datos correctamente";
-                }
-            catch(PDOException $e)
-                {
+            }catch(PDOException $e){
                 echo "Error: " . $e->getMessage();
-                }
+            }catch(Exception $e){
+                echo "Error: " . $e->getMessage();
+            }
             $conn = null;
         }
 

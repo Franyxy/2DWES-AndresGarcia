@@ -101,31 +101,30 @@
                         $stmt4->bindParam(':fecha', $fecha_formateada);
                         $stmt4->execute();
 
-                        $restante=$unidades;
-                        while($restante!=0){
+                        while($unidades!=0){
                             $stmtMax = $conn->prepare("SELECT CANTIDAD as MAXIMO, NUM_ALMACEN FROM almacena WHERE ID_PRODUCTO = :id_prod ORDER BY CANTIDAD DESC LIMIT 1;");
                             $stmtMax->bindParam(':id_prod', $id_prod);
                             $stmtMax->execute();
                             $ArrMax=$stmtMax->FetchAll(PDO::FETCH_ASSOC);
                             $maxVALOR=$ArrMax[0]['MAXIMO'];
 
-                            if($maxVALOR>$restante){
-                                $aux=$maxVALOR-$restante;
+                            if($maxVALOR>$unidades){
+                                $aux=$maxVALOR-$unidades;
                                 $stmt6 = $conn->prepare("UPDATE almacena SET CANTIDAD = :aux  WHERE ID_PRODUCTO = :id_prod AND NUM_ALMACEN = :id_alm;");
                                 $stmt6->bindParam(':id_prod', $id_prod);
                                 $stmt6->bindParam(':id_alm', $ArrMax[0]['NUM_ALMACEN']);
                                 $stmt6->bindParam(':aux', $aux);
                                 $stmt6->execute();
-                                $restante=0;
-                            }else if($maxVALOR==$restante){
-                                $stmt5 = $conn->prepare("DELETE from almacena Where ID_PRODUCTO=:id_prod AND NUM_ALMACEN=:id_alm;");
+                                $unidades=0;
+                            }else if($maxVALOR==$unidades){
+                                $stmt5 = $conn->prepare("UPDATE almacena SET CANTIDAD = 0  WHERE ID_PRODUCTO = :id_prod AND NUM_ALMACEN = :id_alm;");
                                 $stmt5->bindParam(':id_prod', $id_prod);
                                 $stmt5->bindParam(':id_alm', $ArrMax[0]['NUM_ALMACEN']);
                                 $stmt5->execute();
-                                $restante=0;
+                                $unidades=0;
                             }else{
-                                $restante=$restante-$maxVALOR;
-                                $stmt7 = $conn->prepare("DELETE from almacena Where ID_PRODUCTO=:id_prod AND NUM_ALMACEN=:id_alm;");
+                                $unidades=$unidades-$maxVALOR;
+                                $stmt7 = $conn->prepare("UPDATE almacena SET CANTIDAD = 0  WHERE ID_PRODUCTO = :id_prod AND NUM_ALMACEN = :id_alm;");
                                 $stmt7->bindParam(':id_prod', $id_prod);
                                 $stmt7->bindParam(':id_alm', $ArrMax[0]['NUM_ALMACEN']);
                                 $stmt7->execute();
