@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Alta Departamento</title>
+    <title>Empleados de Departamento Histórico</title>
     <link rel="stylesheet" type="text/css" href="index.css">
 </head>
 <body>
     <!--
-        Alta Departamento 
+        Empleados de Departamento Histórico
     -->
     <nav>
         <ul>
@@ -22,34 +22,38 @@
         </ul>
     </nav>
     <fieldset>
-        <legend>Alta Departamento</legend>
+        <legend>Empleados de Departamento Histórico</legend>
         <form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>">
-        <label for="nom_dpto">Nombre Departamento</label>    
-        <input type="text" name="nom_dpto" id="nom_dpto" required><br><br> 
+        <?php
+            include('funciones.php');
+            $conn=connection();
+            $stmt0 = $conn->prepare("SELECT nombre_dpto,cod_dpto from departamento;");
+            $stmt0->execute();
+            $arrayCat=$stmt0->FetchAll(PDO::FETCH_ASSOC);
+            desplegableDpto($arrayCat);
+        ?>
         <input type="submit">
         <input type="reset">
     </form>
     </fieldset>
     <?php
-    include('funciones.php');
         if($_SERVER["REQUEST_METHOD"]=="POST"){
             try {
-                $conn=connection();
-                $stmt1 = $conn->prepare("SELECT MAX(cod_dpto) from departamento;");
-                $stmt1->execute();
-                $CodMax=$stmt1->fetchColumn();
+                $cod_dpto=test_input($_POST['id_dpto']);
+                $arrayEmpleados=empleadoHistStm($conn,$cod_dpto);
 
-                $cod_dpto=generarCodDpto($CodMax);
-                $nom_dpto=strtoupper(test_input($_POST['nom_dpto']));
-
-                introducirDptoStm($conn,$cod_dpto,$nom_dpto);
-
-                echo "Se han introducido los datos correctamente";
+                if(empty($arrayEmpleados)){
+                    echo "<br>En el departamento seleccionado no se encuentra ningún empleado";
+                }else{
+                    imprimirTablaEmpleadoHist($arrayEmpleados);
+                }
                 }
             catch(PDOException $e)
                 {
                 echo "Error: " . $e->getMessage();
-                }
+                }catch(Exception $e){
+                echo "Error: " . $e->getMessage();
+            }
             $conn = null;
         }
     ?>

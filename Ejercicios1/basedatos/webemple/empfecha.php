@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Alta Departamento</title>
+    <title>Relación Fecha</title>
     <link rel="stylesheet" type="text/css" href="index.css">
 </head>
 <body>
     <!--
-        Alta Departamento 
+        Relación Fecha
     -->
     <nav>
         <ul>
@@ -22,10 +22,10 @@
         </ul>
     </nav>
     <fieldset>
-        <legend>Alta Departamento</legend>
+        <legend>Relación Fecha</legend>
         <form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>">
-        <label for="nom_dpto">Nombre Departamento</label>    
-        <input type="text" name="nom_dpto" id="nom_dpto" required><br><br> 
+        <label for="fecha">Introduzca la fecha: </label>
+        <input type="date" name="fecha" id="fecha" required><br><br> 
         <input type="submit">
         <input type="reset">
     </form>
@@ -35,21 +35,18 @@
         if($_SERVER["REQUEST_METHOD"]=="POST"){
             try {
                 $conn=connection();
-                $stmt1 = $conn->prepare("SELECT MAX(cod_dpto) from departamento;");
-                $stmt1->execute();
-                $CodMax=$stmt1->fetchColumn();
-
-                $cod_dpto=generarCodDpto($CodMax);
-                $nom_dpto=strtoupper(test_input($_POST['nom_dpto']));
-
-                introducirDptoStm($conn,$cod_dpto,$nom_dpto);
-
-                echo "Se han introducido los datos correctamente";
+                $fecha=test_input($_POST['fecha']);
+                $arrayFecha=empleadoFecha($conn,$fecha);
+                if(empty($arrayFecha)){
+                    throw new Exception("No hay datos relacionados con la fecha introducida");
+                }else{
+                    imprimirTablaEmpleadoFecha($arrayFecha);
                 }
-            catch(PDOException $e)
-                {
+            }catch(PDOException $e){
                 echo "Error: " . $e->getMessage();
-                }
+            }catch(Exception $e){
+                echo "Error: " . $e->getMessage();
+            }
             $conn = null;
         }
     ?>

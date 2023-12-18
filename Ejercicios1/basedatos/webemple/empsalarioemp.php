@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Alta Departamento</title>
+    <title>Actualizar Salario</title>
     <link rel="stylesheet" type="text/css" href="index.css">
 </head>
 <body>
     <!--
-        Alta Departamento 
+        Actualizar Salario
     -->
     <nav>
         <ul>
@@ -22,34 +22,48 @@
         </ul>
     </nav>
     <fieldset>
-        <legend>Alta Departamento</legend>
+        <legend>Actualizar Salario</legend>
         <form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>">
-        <label for="nom_dpto">Nombre Departamento</label>    
-        <input type="text" name="nom_dpto" id="nom_dpto" required><br><br> 
+        <?php
+            include('funciones.php');
+            $conn=connection();
+            $stmt01 = $conn->prepare("SELECT dni from empleado;");
+            $stmt01->execute();
+            $arrayDNI=$stmt01->FetchAll(PDO::FETCH_ASSOC);
+            desplegableDNI($arrayDNI);
+        ?>
+        <label for="signo">Incremento / Decremento Salario</label>
+        <select name="signo" id="signo">
+            <option value="+1">+</option>
+            <option value="-1">-</option>
+        </select>
+        <label for="mod_salario">
+        <input type="text" name="mod_salario" id="mod_salario" required size="5"> %<br><br> 
         <input type="submit">
         <input type="reset">
     </form>
     </fieldset>
     <?php
-    include('funciones.php');
         if($_SERVER["REQUEST_METHOD"]=="POST"){
             try {
-                $conn=connection();
-                $stmt1 = $conn->prepare("SELECT MAX(cod_dpto) from departamento;");
-                $stmt1->execute();
-                $CodMax=$stmt1->fetchColumn();
+                $dni=test_input($_POST['dni']);
+                $mod_salario=test_input($_POST['mod_salario']);
+                $signo=test_input($_POST['signo']);
+                
+                $salarioActual=salario($conn,$dni);
 
-                $cod_dpto=generarCodDpto($CodMax);
-                $nom_dpto=strtoupper(test_input($_POST['nom_dpto']));
+                $salarioNuevo=$salarioActual+($salarioActual*$mod_salario*$signo/100);
 
-                introducirDptoStm($conn,$cod_dpto,$nom_dpto);
+                salarioNuevoStm($conn,$dni,$salarioNuevo);
 
                 echo "Se han introducido los datos correctamente";
                 }
             catch(PDOException $e)
                 {
                 echo "Error: " . $e->getMessage();
-                }
+                }catch(Exception $e){
+                echo "Error: " . $e->getMessage();
+            }
             $conn = null;
         }
     ?>
