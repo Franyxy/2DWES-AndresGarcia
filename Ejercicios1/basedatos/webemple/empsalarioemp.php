@@ -48,11 +48,19 @@
             try {
                 $dni=test_input($_POST['dni']);
                 $mod_salario=test_input($_POST['mod_salario']);
+
+                if (!preg_match('/^(\d+|\d*\.\d+)$/', $mod_salario)) {
+                    throw new Exception("El valor introducido no está en el formato corrrecto.
+                    <br>Tiene que ser Número decimal positivo.");
+                } 
+
                 $signo=test_input($_POST['signo']);
                 
                 $salarioActual=salario($conn,$dni);
 
                 $salarioNuevo=$salarioActual+($salarioActual*$mod_salario*$signo/100);
+
+                $salarioNuevo=bcdiv($salarioNuevo, '1', 2);
 
                 salarioNuevoStm($conn,$dni,$salarioNuevo);
 

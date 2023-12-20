@@ -35,20 +35,30 @@
         if($_SERVER["REQUEST_METHOD"]=="POST"){
             try {
                 $conn=connection();
+                $nom_dpto=strtoupper(test_input($_POST['nom_dpto']));
+
+
+                $stmt0 = $conn->prepare("SELECT nombre_dpto from departamento;");
+                $stmt0->execute();
+                $arrNombres=$stmt0->FetchAll(PDO::FETCH_COLUMN);
+
+                if(in_array($nom_dpto,$arrNombres)){
+                    throw new Exception("El departamento ya ha sido introducido");
+                }
+
                 $stmt1 = $conn->prepare("SELECT MAX(cod_dpto) from departamento;");
                 $stmt1->execute();
                 $CodMax=$stmt1->fetchColumn();
 
                 $cod_dpto=generarCodDpto($CodMax);
-                $nom_dpto=strtoupper(test_input($_POST['nom_dpto']));
 
                 introducirDptoStm($conn,$cod_dpto,$nom_dpto);
 
                 echo "Se han introducido los datos correctamente";
-                }
-            catch(PDOException $e)
-                {
+            }catch(PDOException $e){
                 echo "Error: " . $e->getMessage();
+                }catch(Exception $e){
+                    echo "Error: " . $e->getMessage();
                 }
             $conn = null;
         }
