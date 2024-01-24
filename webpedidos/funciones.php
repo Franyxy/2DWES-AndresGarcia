@@ -11,7 +11,7 @@
         try{
             $servername = "localhost";
             $username = "root";
-            $password = "adm1n";
+            $password = "rootroot";
             $dbname = "pedidos";
             $conn = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
             $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
@@ -177,7 +177,6 @@
     
     function prod_vendidos($conn, $fecha1, $fecha2){
         try{
-            
             $stmt1 = $conn->prepare("SELECT products.productName, SUM(orderdetails.quantityOrdered) AS unidades_totales FROM orders JOIN orderdetails ON orders.orderNumber = orderdetails.orderNumber JOIN products ON orderdetails.productCode = products.productCode WHERE orders.orderDate BETWEEN :fechaInicio AND :fechaFin GROUP BY products.productName");
             $stmt1->bindParam(':fechaInicio', $fecha1);
             $stmt1->bindParam(':fechaFin', $fecha2);
@@ -193,9 +192,6 @@
     }
 
 
-
-
-
     function imprimir_prodVendidos($ArrayProd){
         echo "<br><table>";
         echo "<tr><th>Producto</th><th>Unidades Vendidas</th></tr>";
@@ -204,7 +200,32 @@
             $unidades = $prod['unidades_totales'];
             echo "<tr><td>$productName</td><td>$unidades</td></tr>";
         }
-
         echo "</table>";
+    }
+
+    function consultarCliente($conn){
+        try{
+            $stmt1 = $conn->prepare("SELECT customerNumber, customerName, contactLastName FROM customers;");
+            $stmt1->execute();
+            $ArrayClientes=$stmt1->FetchAll(PDO::FETCH_ASSOC);
+            return $ArrayClientes;
+        }catch(PDOException $e){
+            echo "Error: " . $e->getMessage();
+        }catch(Exception $e){
+            echo "Error: " . $e->getMessage();
+        }
+        $conn = null;
+    }
+    
+    function  imprimir_Cliente($arrayCliente){
+        echo '<label for="cliente">Elige un cliente </label>';
+            echo '<select name="cliente" id="cliente"><br>';
+            foreach ($arrayCliente as $cliente) {
+                $nombre = $cliente['customerName'];
+                $apellido = $cliente['contactLastName'];
+                $id_cliente = $cliente['customerNumber'];
+                echo '<option value='.$id_cliente.'>'.$nombre." -> ".$id_cliente.'</option>';
+            }
+            echo '</select><br><br>';
     }
 ?>

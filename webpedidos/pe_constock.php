@@ -26,7 +26,7 @@
     </nav>
 </div>
     <fieldset>
-        <legend>Compra Producto</legend>
+        <legend>Stock por Categoria</legend>
         <form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>">
         <?php
             $conn = conection();

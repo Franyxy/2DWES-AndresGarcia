@@ -9,6 +9,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Compra Producto </title>
     <link rel="stylesheet" type="text/css" href="css/inicio.css">
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 </head>
 <body>
 <div class="container">
@@ -24,42 +25,28 @@
         </ul>
     </nav>
 </div>
-<?php
-    if(isset($_SESSION['nombre'])){
-        echo "<br><br>  Has iniciado Sesion: ".$_SESSION['nombre'];
-    }
-    $conn = conection();
-    ?>
-    <h1>Consulta Pedidos</h1>
     <?php
-    if($_SERVER["REQUEST_METHOD"]=="POST"){
-        try{
-            if (isset($_POST['productos_seleccionados'])) {
-                $productos_seleccionados = $_POST['productos_seleccionados'];
-                $orderNumber = obtener_orderNumber($conn);
-                $cont = 0;
-                $amount = 0;
-                foreach ($productos_seleccionados as $prod_id => $unidadesProd) {
-                    $cont += 1;
-                    $unidad = $unidadesProd["cantidad"];
-                    comprar_productos($conn,$prod_id,$unidad);
-                    unset($_SESSION['carrito'][$prod_id]);
-                    añadir_order($conn,$orderNumber);
-                    $precioEach = obtenerPrecio($conn,$prod_id);
-                    $amount += $precioEach*$unidad;
-                    añadir_orderDetails($conn,$orderNumber,$cont,$prod_id,$unidad,$precioEach);
-                }
-                añadir_payments($conn, $amount);
+        if(isset($_SESSION['nombre'])){
+            echo "<br><br>  Has iniciado Sesion: ".$_SESSION['nombre'];
+        }
+        $conn = conection();
+        echo "<h1>Consulta Pedidos</h1>";
+        $arrayCliente = consultarCliente($conn);
+        echo '<label for="cliente">Elige un cliente </label>';
+            echo '<select name="cliente" id="cliente"><br>';
+            foreach ($arrayCliente as $cliente) {
+                $nombre = $cliente['customerName'];
+                $apellido = $cliente['contactLastName'];
+                $id_cliente = $cliente['customerNumber'];
+                echo '<option value='.$id_cliente.'>'.$nombre." -> ".$id_cliente.'</option>';
             }
-            header('location: carrito.php');
-        }
-        catch(PDOException $e){
-            echo "Error: " . $e->getMessage();
-        }catch(Exception $e){
-            echo "Error: " . $e->getMessage();
-        }
-        $conn = null;
-    }
+            echo '</select><br><br>';   
     ?>
+    <label for="order" id="LaberOrder" style="display: none;">Elige un pedido </label>
+    <select name="order" id="order" style="display: none;"></select><br><br>
+
+    <table id="tablapedido"></table>
+
+    <script src="clientespedidos.js"></script>
 </body>
 </html>
