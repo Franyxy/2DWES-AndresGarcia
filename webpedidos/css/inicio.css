@@ -120,3 +120,12 @@ td,th {
   height: 25px;
   text-align: center;
 }
+
+#cierresesion{
+  background-color: red;
+}
+
+.nav > #cierresesion:hover {
+  color: #000000;
+  text-shadow: 0 1px white, 0 0 20px white;
+}

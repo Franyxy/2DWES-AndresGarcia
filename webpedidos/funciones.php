@@ -11,7 +11,7 @@
         try{
             $servername = "localhost";
             $username = "root";
-            $password = "rootroot";
+            $password = "adm1n";
             $dbname = "pedidos";
             $conn = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
             $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
@@ -227,5 +227,49 @@
                 echo '<option value='.$id_cliente.'>'.$nombre." -> ".$id_cliente.'</option>';
             }
             echo '</select><br><br>';
+    }
+
+    function paymentsFechas($conn, $fecha1, $fecha2, $id_cliente){
+        try{
+            $stmt1 = $conn->prepare("SELECT *  FROM payments WHERE customerNumber = :id_cliente AND paymentDate BETWEEN :fecha1 and :fecha2;");
+            $stmt1->bindParam(':fecha1', $fecha1);
+            $stmt1->bindParam(':fecha2', $fecha2);
+            $stmt1->bindParam(':id_cliente', $id_cliente);
+            $stmt1->execute();
+            $arrayPayments=$stmt1->FetchAll(PDO::FETCH_ASSOC);
+            return $arrayPayments;
+        }catch(PDOException $e){
+            echo "Error: " . $e->getMessage();
+        }catch(Exception $e){
+            echo "Error: " . $e->getMessage();
+        }
+        $conn = null;
+    }
+
+    function paymentsNOFechas($conn, $id_cliente){
+        try{
+            $stmt1 = $conn->prepare("SELECT *  FROM payments WHERE customerNumber = :id_cliente;");
+            $stmt1->bindParam(':id_cliente', $id_cliente);
+            $stmt1->execute();
+            $arrayPayments=$stmt1->FetchAll(PDO::FETCH_ASSOC);
+            return $arrayPayments;
+        }catch(PDOException $e){
+            echo "Error: " . $e->getMessage();
+        }catch(Exception $e){
+            echo "Error: " . $e->getMessage();
+        }
+        $conn = null;
+    }
+
+    function imprimirPayments($arrayPayments){
+        echo "<br><table>";
+        echo "<tr><th>Check Number</th><th>Payment Date</th><th>Amount</th></tr>";
+        foreach($arrayPayments as $pay){
+            $checkNumber = $pay['checkNumber'];
+            $paymentDate = $pay['paymentDate'];
+            $amount = $pay['amount'];
+            echo "<tr><td>$checkNumber</td><td>$paymentDate</td><td>$amount</td></tr>";
+        }
+        echo "</table>";
     }
 ?>

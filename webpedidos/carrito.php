@@ -11,6 +11,7 @@
     <link rel="stylesheet" type="text/css" href="css/inicio.css">
 </head>
 <body>
+
 <div class="container">
     <nav>
         <ul class="nav">
@@ -21,6 +22,7 @@
         <li><a href="pe_topprod.php">Productos Vendidos</a></li>
         <li><a href="pe_conspago.php">Pagos Realizados</a></li>
         <li><a href="carrito.php"><img src="img/carrito.png"></a></li>
+        <li id="cierresesion"><a href="cierresesion.php">Cerrar Sesion</a></li>
         </ul>
     </nav>
 </div>
@@ -32,7 +34,7 @@
     ?>
     <h1>Carrito de compra </h1>
     <?php
-        if(($_SESSION['carrito'])){
+        if(isset($_SESSION['carrito']) && ($_SESSION['carrito'])){
             echo "<form method='post' action='" . htmlspecialchars($_SERVER["PHP_SELF"]) . "'>";
             echo "<table>";
             echo "<tr><td></td><td>Producto</td><td>Unidades</td><td>Precio Unitario</td><td>Precio Total</td></tr>";

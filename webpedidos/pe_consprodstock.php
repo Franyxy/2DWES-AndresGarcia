@@ -22,6 +22,8 @@
         <li><a href="pe_topprod.php">Productos Vendidos</a></li>
         <li><a href="pe_conspago.php">Pagos Realizados</a></li>
         <li><a href="carrito.php"><img src="img/carrito.png"></a></li>
+        <li id="cierresesion"><a href="cierresesion.php">Cerrar Sesion</a></li>
+
         </ul>
     </nav>
 </div>
