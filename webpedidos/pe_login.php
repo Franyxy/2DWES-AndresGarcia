@@ -27,12 +27,11 @@
                 $pass=test_input($_POST['pass']);
                 $nombre=test_input($_POST['nombre']);
                 $arrayBool = inicio_sesion($conn,$pass,$nombre);
-                var_dump($arrayBool);
                 if(!$arrayBool){
                     echo("El nombre de usuario o la contraseña no coinciden / No se ha registrado");
                 }else{
-                    $_SESSION['nombre']=$nombre;
                     session_start();
+                    $_SESSION['nombre']=$nombre;
                     header("Location:pe_inicio.php");
                 }
                 }

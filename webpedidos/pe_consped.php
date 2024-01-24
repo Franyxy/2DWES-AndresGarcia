@@ -30,35 +30,8 @@
     }
     $conn = conection();
     ?>
-    <h1>Carrito de compra </h1>
+    <h1>Consulta Pedidos</h1>
     <?php
-        if(($_SESSION['carrito'])){
-            echo "<form method='post' action='" . htmlspecialchars($_SERVER["PHP_SELF"]) . "'>";
-            echo "<table>";
-            echo "<tr><td></td><td>Producto</td><td>Unidades</td><td>Precio Unitario</td><td>Precio Total</td></tr>";
-            foreach($_SESSION['carrito'] as $prod => $nombre){
-                $nombre_prod = obtener_nombre($conn,$prod);
-                $precio = obtenerPrecio($conn,$prod);
-                $preciototal = $precio*$nombre['cantidad'];
-                echo '<tr>';
-                echo '<td><input type="checkbox" id="'.$nombre_prod.'" name="productos_seleccionados['.$prod.'][cantidad]" value="'.$nombre['cantidad'].'"></td>';
-                echo '<td><label for="'.$nombre_prod.'">'.$nombre_prod.'</label></td>';
-                echo '<td>'.$nombre['cantidad'].'</td>';
-                echo '<td>'.$precio.'</td>';
-                echo '<td>'.$preciototal.'</td>';
-                echo '</tr>';
-            }
-            echo '<label for="tarjeta" id="tarjeta">Nº Tarjeta </label>';
-            echo '<input type="text" name="tarjeta" id="tarjeta" required><br><br>';
-            echo "</table>";
-            echo '<br><input type="submit" value="Comprar">';
-            echo "</form>";
-            echo "<br><br><a href='./historial.php'>Historial de Compras</a>";
-        }else{
-            echo "<h3>El Carrito esta Vacio</h3>";
-            echo "<a href='./compro.php'>Volver a comprar</a><br>";
-        }
-    
     if($_SERVER["REQUEST_METHOD"]=="POST"){
         try{
             if (isset($_POST['productos_seleccionados'])) {
