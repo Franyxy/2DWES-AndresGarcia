@@ -11,7 +11,7 @@
         try{
             $servername = "localhost";
             $username = "root";
-            $password = "adm1n";
+            $password = "rootroot";
             $dbname = "pedidos";
             $conn = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
             $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
@@ -157,23 +157,52 @@
     }
 
     function añadir_payments($conn, $amount){
-        try{
+        try {
             $customerNumber = $_SESSION['nombre'];
             $fecha = date('Y-m-d');
-            $checkNumber = 'AA000000';
-            $stmt1 = $conn->prepare("INSERT INTO payments (customerNumber, checkNumber, paymentDate, amount) VALUES(:customerNumber, :checkNumber, :paymentDate, :amount) ; ");
+            do {
+                $checkNumber = generarCodigoAleatorio();
+            } while (!comprobarcodigo($conn, $checkNumber));
+    
+            $stmt1 = $conn->prepare("INSERT INTO payments (customerNumber, checkNumber, paymentDate, amount) VALUES(:customerNumber, :checkNumber, :paymentDate, :amount)");
             $stmt1->bindParam(':customerNumber', $customerNumber);
             $stmt1->bindParam(':checkNumber', $checkNumber);
             $stmt1->bindParam(':paymentDate', $fecha);
             $stmt1->bindParam(':amount', $amount);
             $stmt1->execute();
-        }catch(PDOException $e){
+    
+        } catch(PDOException $e) {
             echo "Error: " . $e->getMessage();
-        }catch(Exception $e){
+        } catch(Exception $e) {
             echo "Error: " . $e->getMessage();
         }
-        $conn = null;
     }
+    
+    function comprobarcodigo($conn, $checkNumber){
+        try {
+            $stmt1 = $conn->prepare("SELECT * FROM payments WHERE checkNumber = :checkNumber;");
+            $stmt1->bindParam(':checkNumber', $checkNumber);
+            $stmt1->execute();
+            $ArrayCheckNumber = $stmt1->fetchAll(PDO::FETCH_ASSOC);
+            if (empty($ArrayCheckNumber)) {
+                return TRUE;
+            } else {
+                return FALSE;
+            }
+        } catch (PDOException $e) {
+            echo "Error: " . $e->getMessage();
+            return FALSE;
+        }
+    }
+    
+    function generarCodigoAleatorio() {
+        $letra1 = chr(rand(65, 90));
+        $letra2 = chr(rand(65, 90));
+        $numero = str_pad(rand(0, 999999), 6, '0', STR_PAD_LEFT);
+        $codigo = $letra1 . $letra2 . $numero;
+        return $codigo;
+    }
+    
     
     function prod_vendidos($conn, $fecha1, $fecha2){
         try{

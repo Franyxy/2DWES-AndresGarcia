@@ -58,7 +58,7 @@
             echo "<br><br><a href='./historial.php'>Historial de Compras</a>";
         }else{
             echo "<h3>El Carrito esta Vacio</h3>";
-            echo "<a href='./compro.php'>Volver a comprar</a><br>";
+            echo "<a href='./pe_altaped.php'>Volver a comprar</a><br>";
         }
     
     if($_SERVER["REQUEST_METHOD"]=="POST"){
