@@ -301,4 +301,75 @@
         }
         echo "</table>";
     }
+
+    function convertirPrecio($precio) {
+        $precioCentavos = $precio * 100;
+        $precioString = str_replace('.', '', strval($precioCentavos));
+        if (strlen($precioString) == 2) {
+            $precioString .= '00'; // Ejemplo: 24.4 -> 2440
+        } elseif (strlen($precioString) == 3) {
+            $precioString .= '0'; // Ejemplo: 23.45 -> 2345
+        } elseif (strlen($precioString) < 2) {
+            $precioString = '00'; // Para casos como 0.1
+        }
+        return $precioString;
+    }
+
+    function pasarela($orderNumber, $amount) {
+        // Se incluye la librería
+        include 'apiRedsys.php';
+        // Se crea Objeto
+        $miObj = new RedsysAPI;
+
+        // Valores de entrada que no hemos cambiado para ningún ejemplo
+        $fuc="999008881";
+        $terminal="1";
+        $moneda="978";
+        $trans="0";
+        $urlOK="http://192.168.206.211/webpedidos/pagorealizado.php";
+        $urlKO="http://192.168.206.211/webpedidos/pagocancelado.php";
+        $id=$orderNumber+1;
+        $amount1=convertirPrecio($amount);  
+
+        // Se Rellenan los campos
+        $miObj->setParameter("DS_MERCHANT_AMOUNT",$amount1);
+        $miObj->setParameter("DS_MERCHANT_ORDER",$id);
+        $miObj->setParameter("DS_MERCHANT_MERCHANTCODE",$fuc);
+        $miObj->setParameter("DS_MERCHANT_CURRENCY",$moneda);
+        $miObj->setParameter("DS_MERCHANT_TRANSACTIONTYPE",$trans);
+        $miObj->setParameter("DS_MERCHANT_TERMINAL",$terminal);
+        $miObj->setParameter("DS_MERCHANT_MERCHANTURL",$urlOK);
+        $miObj->setParameter("DS_MERCHANT_URLOK",$urlOK);
+        $miObj->setParameter("DS_MERCHANT_URLKO",$urlKO);
+
+        //Datos de configuración
+        $version="HMAC_SHA256_V1";
+        $kc = 'sq7HjrUOBfKmC576ILgskD5srU870gJ7';//Clave recuperada de CANALES
+        // Se generan los parámetros de la petición
+        $params = $miObj->createMerchantParameters();
+        $signature = $miObj->createMerchantSignature($kc);
+        echo '<form id="frm" name="frm" action="https://sis-t.redsys.es:25443/sis/realizarPago" method="POST" target="_blank">';
+        echo '<input type="text" name="Ds_SignatureVersion" value="'.$version.'" hidden/><br>';
+        echo '<input type="text" name="Ds_MerchantParameters" value="'.$params.'" hidden/><br>';
+        echo '<input type="text" name="Ds_Signature" value="'.$signature.'" hidden/><br>';
+        echo '<input type="submit" value="Acceder al Pago">';
+        echo '</form>';   
+    }
+
+    function post_pago($conn, $orderNumber, $productos_seleccionados){
+
+        $cont = 0;
+        $amount = 0;
+        foreach ($productos_seleccionados as $prod_id => $unidadesProd) {
+            $cont += 1;
+            $unidad = $unidadesProd["cantidad"];
+            comprar_productos($conn,$prod_id,$unidad);
+            unset($_SESSION['carrito'][$prod_id]);
+            añadir_order($conn,$orderNumber);
+            $precioEach = obtenerPrecio($conn,$prod_id);
+            $amount += $precioEach*$unidad;
+            añadir_orderDetails($conn,$orderNumber,$cont,$prod_id,$unidad,$precioEach);
+        }
+        añadir_payments($conn, $amount);
+    }
 ?>

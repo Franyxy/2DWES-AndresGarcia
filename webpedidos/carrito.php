@@ -4,6 +4,8 @@
         header('location: cierresesion.php');
     }
     include('funciones.php');
+
+    
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -53,12 +55,9 @@
                 echo '<td>'.$preciototal.'</td>';
                 echo '</tr>';
             }
-            echo '<label for="tarjeta" id="tarjeta">Nº Tarjeta </label>';
-            echo '<input type="text" name="tarjeta" id="tarjeta" required><br><br>';
             echo "</table>";
             echo '<br><input type="submit" value="Comprar">';
             echo "</form>";
-            echo "<br><br><a href='./historial.php'>Historial de Compras</a>";
         }else{
             echo "<h3>El Carrito esta Vacio</h3>";
             echo "<a href='./pe_altaped.php'>Volver a comprar</a><br>";
@@ -69,21 +68,17 @@
             if (isset($_POST['productos_seleccionados'])) {
                 $productos_seleccionados = $_POST['productos_seleccionados'];
                 $orderNumber = obtener_orderNumber($conn);
-                $cont = 0;
                 $amount = 0;
                 foreach ($productos_seleccionados as $prod_id => $unidadesProd) {
-                    $cont += 1;
                     $unidad = $unidadesProd["cantidad"];
-                    comprar_productos($conn,$prod_id,$unidad);
-                    unset($_SESSION['carrito'][$prod_id]);
-                    añadir_order($conn,$orderNumber);
                     $precioEach = obtenerPrecio($conn,$prod_id);
                     $amount += $precioEach*$unidad;
-                    añadir_orderDetails($conn,$orderNumber,$cont,$prod_id,$unidad,$precioEach);
                 }
-                añadir_payments($conn, $amount);
+                $_SESSION['productos_comprados'] = $productos_seleccionados;
+                $_SESSION['id_pedido'] = $orderNumber;
+                pasarela($orderNumber, $amount);
             }
-            header('location: carrito.php');
+            
         }
         catch(PDOException $e){
             echo "Error: " . $e->getMessage();
