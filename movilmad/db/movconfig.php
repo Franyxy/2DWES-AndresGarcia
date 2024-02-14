@@ -1,6 +1,6 @@
 ﻿<?php
    define('DB_SERVER', 'localhost');
    define('DB_USERNAME', 'root');
-   define('DB_PASSWORD', 'rootroot');
+   define('DB_PASSWORD', 'adm1n');
    define('DB_DATABASE', 'movilmad');
 ?>

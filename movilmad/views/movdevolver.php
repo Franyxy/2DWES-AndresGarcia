@@ -1,4 +1,10 @@
-﻿<html>
+﻿<?php
+    session_start();
+    if(!isset($_SESSION['email'])){
+        header('Location:./movlogin.php');
+    }
+?>
+<html>
    
   <head>
     <meta charset="UTF-8">
@@ -22,8 +28,8 @@
 	<!-- INICIO DEL FORMULARIO -->
 	<form action="" method="post">
 	
-		<B>Bienvenido/a:</B>  <BR><BR>
-		<B>Identificador Cliente:</B>  <BR><BR>
+		<B>Bienvenido/a: </B><?php echo $_SESSION['nombre'];?><BR><BR>
+		<B>Identificador Cliente: </B><?php echo $_SESSION['identificador'];?><BR><BR>	
 				
 			<B>Matricula/Marca/Modelo: </B><select name="vehiculos" class="form-control">
 				

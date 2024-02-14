@@ -25,4 +25,19 @@ function inicio_sesion($email, $pass){
     $conn = null;
 }
 
+function obtenerNombre($passw){
+    global $conn;
+    try{
+        $stmt2 = $conn->prepare("SELECT nombre, apellido FROM rclientes where idcliente=:passw");
+        $stmt2->bindParam(':passw', $passw);
+        $stmt2->execute();
+        $nombre=$stmt2->fetchAll(PDO::FETCH_ASSOC);
+        return $nombre[0]['nombre'].' '.$nombre[0]['apellido'];
+    }catch (PDOException $ex) {
+        echo $ex->getMessage();
+        return null;
+    }
+    $conn = null;
+}
+
 ?>

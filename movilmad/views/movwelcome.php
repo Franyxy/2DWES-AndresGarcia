@@ -1,4 +1,10 @@
-﻿<html>
+﻿<?php
+    session_start();
+    if(!isset($_SESSION['email'])){
+        header('Location:./movlogin.php');
+    }
+?>
+<html>
    
  <head>
     <meta charset="UTF-8">
@@ -10,7 +16,6 @@
    
  <body>
     <h1>Servicio de ALQUILER DE E-CARS</h1> 
-
     <div class="container ">
         <!--Aplicacion-->
 		<div class="card border-success mb-3" style="max-width: 30rem;">
@@ -18,15 +23,15 @@
 		<div class="card-body">
 
 
-		<B>Bienvenido/a:</B>    <BR><BR>
-		<B>Identificador Cliente:</B>  <BR><BR>
+		<B>Bienvenido/a: </B><?php echo $_SESSION['nombre'];?><BR><BR>
+		<B>Identificador Cliente: </B><?php echo $_SESSION['identificador'];?><BR><BR>
 	 
 		
        <!--Formulario con botones -->
 	
-		<input type="button" value="Alquilar Vehículo" onclick="window.location.href=''" class="btn btn-warning disabled">
-		<input type="button" value="Consultar Alquileres" onclick="window.location.href=''" class="btn btn-warning disabled">
-		<input type="button" value="Devolver Vehículo" onclick="window.location.href=''" class="btn btn-warning disabled">
+		<input type="button" value="Alquilar Vehículo" onclick="window.location.href='./movalquilar.php'" class="btn btn-warning disabled">
+		<input type="button" value="Consultar Alquileres" onclick="window.location.href='./movconsultar.php'" class="btn btn-warning disabled">
+		<input type="button" value="Devolver Vehículo" onclick="window.location.href='./movdevolver.php'" class="btn btn-warning disabled">
 		</br></br>
 		  <BR><a href="../controllers/cerrarsesion.php">Cerrar Sesión</a>
 	</div>  
