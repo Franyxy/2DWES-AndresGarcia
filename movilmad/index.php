@@ -6,5 +6,3 @@
         header('Location:./views/movwelcome.php');
     }
 ?>
-
-    
